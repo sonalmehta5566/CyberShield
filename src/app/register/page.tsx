@@ -1,0 +1,309 @@
+
+"use client";
+
+import { useState } from "react";
+import type { FormEvent } from "react";
+import Link from "next/link";
+
+export default function RegisterPage() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setMessage("");
+    setIsSuccess(false);
+
+    // Check whether passwords match
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Send registration details to the backend
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        setMessage(result.message || "Registration failed.");
+        return;
+      }
+
+      setIsSuccess(true);
+      setMessage("Account created successfully! You can now sign in.");
+
+      setName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+
+    } catch {
+      setMessage("Unable to connect to the server. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-[#eaf2ff] px-4 py-10">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-2xl md:min-h-[650px] md:grid-cols-[1.15fr_0.85fr]">
+
+        {/* LEFT BRANDING PANEL */}
+        <section className="relative flex min-h-[430px] flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#061a40] via-[#05275c] to-[#03132f] px-8 py-12 text-center text-white md:min-h-[650px]">
+
+          <div className="absolute left-1/2 top-20 h-64 w-64 -translate-x-1/2 rounded-full bg-blue-500/10 blur-3xl" />
+
+          {/* Shield logo */}
+          <div className="relative z-10 mb-3">
+            <svg viewBox="0 0 64 76" className="h-16 w-16" fill="none">
+              <path
+                d="M32 3 L57 14 V35 C57 52 46 65 32 73 C18 65 7 52 7 35 V14 Z"
+                fill="#0879d8"
+                stroke="#63c7ff"
+                strokeWidth="3"
+              />
+              <path
+                d="M32 10 L50 18 V35 C50 48 42 58 32 64 C22 58 14 48 14 35 V18 Z"
+                fill="#08295d"
+              />
+              <path
+                d="M38 22 L26 39 H34 L29 53 L43 34 H34 Z"
+                fill="#8be0ff"
+              />
+            </svg>
+          </div>
+
+          <h1 className="relative z-10 text-4xl font-extrabold tracking-tight">
+            Cyber<span className="text-[#20a8ff]">Shield</span>
+          </h1>
+
+          <p className="relative z-10 mt-5 text-base font-medium leading-6 text-white">
+            Authorized Website
+            <br />
+            Security Assessment Platform
+          </p>
+
+          <p className="relative z-10 mt-4 text-xs tracking-wide text-sky-300">
+            Assess&nbsp; • &nbsp;Monitor&nbsp; • &nbsp;Stay Secure
+          </p>
+
+          {/* Decorative circuit waves */}
+          <svg
+            viewBox="0 0 600 220"
+            preserveAspectRatio="none"
+            className="absolute bottom-0 left-0 h-[43%] w-full opacity-90"
+          >
+            <defs>
+              <linearGradient id="registerCircuitLine" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#0879ff" stopOpacity="0.1" />
+                <stop offset="50%" stopColor="#13baff" />
+                <stop offset="100%" stopColor="#0879ff" stopOpacity="0.1" />
+              </linearGradient>
+            </defs>
+
+            <path d="M0 60 Q120 150 210 110 T400 100 T600 60" stroke="url(#registerCircuitLine)" strokeWidth="2" fill="none" />
+            <path d="M0 90 Q120 170 210 130 T400 120 T600 90" stroke="url(#registerCircuitLine)" strokeWidth="1.5" fill="none" />
+            <path d="M0 125 L90 160 L150 145 L220 190 L300 130 L380 180 L460 135 L530 160 L600 120" stroke="#078cff" strokeWidth="1.5" fill="none" />
+            <path d="M0 160 L70 180 L140 165 L220 205 L300 165 L380 205 L460 165 L530 190 L600 155" stroke="#0879ff" strokeWidth="1" fill="none" />
+
+            {[70, 150, 220, 300, 380, 460, 530].map((x, i) => (
+              <circle key={i} cx={x} cy={[160, 145, 190, 130, 180, 135, 160][i]} r="3" fill="#38c8ff" />
+            ))}
+          </svg>
+
+          {/* Bottom security shield */}
+          <div className="absolute bottom-5 left-1/2 z-10 -translate-x-1/2">
+            <svg viewBox="0 0 100 115" className="h-28 w-28 drop-shadow-[0_0_15px_rgba(0,153,255,0.7)]" fill="none">
+              <path
+                d="M50 3 L91 20 V53 C91 79 72 99 50 111 C28 99 9 79 9 53 V20 Z"
+                fill="#073b80"
+                stroke="#16a9ff"
+                strokeWidth="4"
+              />
+              <path
+                d="M50 13 L80 26 V53 C80 72 67 88 50 98 C33 88 20 72 20 53 V26 Z"
+                fill="#08295b"
+                stroke="#62caff"
+                strokeWidth="2"
+              />
+              <rect x="37" y="49" width="26" height="23" rx="4" fill="#d8f4ff" />
+              <path d="M42 49 V41 A8 8 0 0 1 58 41 V49" stroke="#d8f4ff" strokeWidth="5" />
+              <circle cx="50" cy="59" r="3" fill="#0879d8" />
+            </svg>
+          </div>
+        </section>
+
+        {/* RIGHT REGISTRATION FORM */}
+        <section className="flex items-center justify-center bg-white px-7 py-12 sm:px-12">
+          <div className="w-full max-w-sm">
+
+            <div className="mb-7">
+              <h2 className="text-3xl font-bold tracking-tight text-[#071c46]">
+                Create Account
+              </h2>
+
+              <p className="mt-2 text-sm text-slate-600">
+                Register to get started with CyberShield
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+
+              {/* Full Name */}
+              <div>
+                <label htmlFor="name" className="mb-2 block text-sm font-semibold text-slate-700">
+                  Full Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  autoComplete="name"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="h-12 w-full rounded-lg border border-blue-100 bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+
+              {/* Email */}
+              <div>
+                <label htmlFor="email" className="mb-2 block text-sm font-semibold text-slate-700">
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Enter your email address"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-12 w-full rounded-lg border border-blue-100 bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+
+              {/* Password */}
+              <div>
+                <label htmlFor="password" className="mb-2 block text-sm font-semibold text-slate-700">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Create a password"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    maxLength={72}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-12 w-full rounded-lg border border-blue-100 bg-white px-4 pr-16 text-sm text-slate-800 outline-none transition placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-500 hover:text-blue-600"
+                  >
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label htmlFor="confirmPassword" className="mb-2 block text-sm font-semibold text-slate-700">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    maxLength={72}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="h-12 w-full rounded-lg border border-blue-100 bg-white px-4 pr-16 text-sm text-slate-800 outline-none transition placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-500 hover:text-blue-600"
+                  >
+                    {showConfirmPassword ? "Hide" : "Show"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Registration message */}
+              {message && (
+                <p
+                  role={isSuccess ? "status" : "alert"}
+                  className={`text-sm ${
+                    isSuccess ? "text-green-700" : "text-red-600"
+                  }`}
+                >
+                  {message}
+                </p>
+              )}
+
+              {/* Register button */}
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="h-12 w-full rounded-lg bg-[#064de5] text-sm font-bold text-white shadow-md transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLoading ? "Creating Account..." : "Create Account"}
+              </button>
+
+            </form>
+
+            {/* Login link */}
+            <p className="mt-6 text-center text-sm text-slate-600">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-semibold text-blue-700 hover:text-blue-900"
+              >
+                Sign In
+              </Link>
+            </p>
+
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}
